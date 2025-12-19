@@ -67,16 +67,14 @@ function UsersPage() {
     return;
   }
   const formData = new FormData();
-  formData.append("file", selectedFile); // "file" debe coincidir con @RequestParam("file") en Java
+  formData.append("file", selectedFile);
 
   try {
-    // ELIMINAMOS EL HEADER MANUALMENTE
     await api.post("/users/import/csv", formData); 
     
     alert("CSV subido correctamente");
     loadUsers();
   } catch (error) {
-    // Si el backend responde con un error 400, aquí verás el mensaje real
     const message = error.response?.data || "Error al subir el CSV";
     Swal.fire("Error", message, "error");
     console.error("Error al subir el CSV:", error);
@@ -104,7 +102,7 @@ function UsersPage() {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Usuarios</h2>
         <div className="mb-3 d-flex gap-2" style={{ marginLeft: '10px' }}>
-<button className="btn btn-primary" style={{ float: 'right', marginBottom: '20px' }} onClick={() => navigate("/users/new")}>
+<button className="btn btn-primary" style={{ float: 'right', marginBottom: '20px' }} onClick={() => navigate("/dashboard/users/new")}>
 Registrar usuario
 </button>
 </div>
@@ -173,7 +171,7 @@ Registrar usuario
               </td>
               <td>{departmentMap[u.idDepartment] || "Sin departamento"}</td>
               <td>
-                <button className="btn btn-sm btn-warning me-2" onClick={() => navigate(`/users/edit/${u.identificationNumber}`)}>Editar</button>
+                <button className="btn btn-sm btn-warning me-2" onClick={() => navigate(`/dashboard/users/edit/${u.identificationNumber}`)}>Editar</button>
                 <button className="btn btn-sm btn-danger" onClick={() => handleDownloadPdf(u.identificationNumber)}>PDF</button>
               </td>
             </tr>

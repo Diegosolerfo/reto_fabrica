@@ -31,9 +31,8 @@ api.interceptors.response.use(
     title: 'Acceso Denegado',
     text: 'Redirigiendo al login...',
     timer: 5000, 
-    showConfirmButton: false
+    showConfirmButton: true
 }).then(() => {
-    alert("Sesión expirada o acceso no autorizado. Por favor, inicia sesión de nuevo.");
     window.location.href = "/";
 });
             }

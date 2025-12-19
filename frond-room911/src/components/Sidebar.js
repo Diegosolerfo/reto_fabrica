@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 const handleLogout = (e) => {
-    e.preventDefault(); // Evitamos que el link navegue solo
-    
+    e.preventDefault();
     Swal.fire({
       title: '¿Cerrar sesión?',
       text: "Tendrás que ingresar de nuevo",
@@ -13,9 +12,8 @@ const handleLogout = (e) => {
       confirmButtonText: 'Sí, salir'
     }).then((result) => {
       if (result.isConfirmed) {
-        // LIMPIEZA TOTAL
         localStorage.clear(); 
-        window.location.href = "/"; // Redirección forzada al login
+        window.location.href = "/"; 
       }
     });
   };
@@ -31,14 +29,18 @@ function Sidebar() {
 
       <ul style={{ listStyle: "none", padding: 0 }}>
         <li>
-          <Link to="/dashboard/access" style={linkStyle}>Access</Link>
+          <Link to="/dashboard/access" style={linkStyle}>Accesos</Link>
         </li>
         <li>
-          <Link to="/dashboard/users" style={linkStyle}>Users</Link>
+          <Link to="/dashboard/users" style={linkStyle}>Usuarios</Link>
         </li>
         <li>
-          <Link to="/dashboard/departments" style={linkStyle}>Departments</Link>
+          <Link to="/dashboard/departments" style={linkStyle}>Departamentos</Link>
         </li>
+        <li>
+          <Link to="/dashboard" style={linkStyle}>Resumen</Link>
+        </li>
+
         <li>
           <Link to="#" onClick={handleLogout} style={linkStyle}>Cerrar Sesión</Link>
         </li>

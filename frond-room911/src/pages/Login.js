@@ -32,6 +32,7 @@ function Login() {
         Swal.fire("Ingreso correcto", result.message, "success");
       }
     } catch (error) {
+
       Swal.fire("Error", "Error datos incorrectos", "error");
     }
   };
@@ -63,7 +64,6 @@ function Login() {
               placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
             />
           </div>
 

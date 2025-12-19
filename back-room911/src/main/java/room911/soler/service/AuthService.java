@@ -22,22 +22,23 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     public LoginResponse login(Long identificationNumber, String password) {
-        User user = userRepository.findByIdentificationNumber(identificationNumber)
-                .orElseThrow(() -> new RuntimeException("Usuario no existe"));
-
-        if (!user.getPassword().equals(password)) {
-            throw new RuntimeException("Contraseña incorrecta");
-        }
-
-        if (!Boolean.TRUE.equals(user.getAllow())) {
-            throw new RuntimeException("Usuario no autorizado");
-        }
-
         Access access = new Access();
-        access.setIdentification(user.getIdentificationNumber());
+        access.setIdentification(identificationNumber);
         access.setDate(LocalDate.now());
         access.setHour(LocalTime.now());
         accessRepository.save(access);
+
+        User user = userRepository.findByIdentificationNumber(identificationNumber)
+                .orElseThrow(() -> new RuntimeException("Usuario no existe"));
+
+        if(user.getUsertype().equals("admin_room_911")){
+            if (!user.getPassword().equals(password)) {
+                throw new RuntimeException("Contraseña incorrecta");
+            }
+        }
+        if (!Boolean.TRUE.equals(user.getAllow())) {
+            throw new RuntimeException("Usuario no autorizado");
+        }
 
         String token = jwtUtil.generateToken(user.getIdentificationNumber(), user.getUsertype());
 

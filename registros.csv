@@ -1,11 +1,3 @@
-identificationNumber,usertype,firstName,lastName,idDepartment,password_,allow
+identificationNumber,usertype,firstName,lastName,idDepartment,password,allow
 10001,empleado,Carlos,Ramirez,1,123456,true
 10002,empleado,Ana,Gomez,1,123456,true
-10003,empleado,Juan,Perez,1,123456,true
-10004,empleado,Laura,Martinez,1,123456,true
-10005,empleado,Diego,Torres,1,123456,true
-10006,empleado,Sofia,Hernandez,1,123456,true
-10007,empleado,Andres,Lopez,1,123456,true
-10008,empleado,Valentina,Castro,1,123456,true
-10009,empleado,Daniel,Ortiz,1,123456,true
-10010,empleado,Maria,Suarez,1,123456,true

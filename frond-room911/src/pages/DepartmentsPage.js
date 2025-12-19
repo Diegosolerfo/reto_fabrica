@@ -7,7 +7,7 @@ const DEPARTMENTS_PER_PAGE = 10;
 function DepartmentsPage() {
   const [departments, setDepartments] = useState([]);
   const [page, setPage] = useState(0);
-  const [filterName, setFilterName] = useState(""); // Estado para el filtro
+  const [filterName, setFilterName] = useState(""); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,12 +23,10 @@ function DepartmentsPage() {
     }
   };
 
-  // --- LÓGICA DE FILTRADO ---
   const filteredDepartments = departments.filter(d =>
     d.name.toLowerCase().includes(filterName.toLowerCase())
   );
 
-  // 🔹 paginación frontend sobre datos filtrados
   const totalPages = Math.ceil(filteredDepartments.length / DEPARTMENTS_PER_PAGE);
   const start = page * DEPARTMENTS_PER_PAGE;
   const end = start + DEPARTMENTS_PER_PAGE;
@@ -38,12 +36,11 @@ function DepartmentsPage() {
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Departamentos</h2>
-        <button className="btn btn-primary" onClick={() => navigate("/departments/new")}>
+        <button className="btn btn-primary" onClick={() => navigate("/dashboard/departments/new")}>
           Nuevo Departamento
         </button>
       </div>
 
-      {/* --- BARRA DE FILTRO POR NOMBRE --- */}
       <div className="card p-3 mb-3 shadow-sm bg-light">
         <div className="row">
           <div className="col-md-6">
@@ -55,7 +52,7 @@ function DepartmentsPage() {
                 value={filterName}
                 onChange={(e) => {
                   setFilterName(e.target.value);
-                  setPage(0); // Reset a pág 1 al filtrar
+                  setPage(0); 
                 }}
               />
             </div>
@@ -81,7 +78,7 @@ function DepartmentsPage() {
               <td>
                 <button
                   className="btn btn-warning btn-sm shadow-sm"
-                  onClick={() => navigate(`/departments/edit/${d.idDepartment}`)}
+                  onClick={() => navigate(`/dashboard/departments/edit/${d.idDepartment}`)}
                 >
                   Editar
                 </button>
