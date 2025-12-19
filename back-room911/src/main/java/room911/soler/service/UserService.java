@@ -29,7 +29,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
 
-    // ================= CRUD =================
 
     public Page<User> getUsersPage(int page, int size) {
         return userRepository.findAll(PageRequest.of(page, size));
@@ -90,7 +89,6 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    // ================= CSV =================
 
     public void importUsersFromCSV(MultipartFile file) {
 
@@ -141,7 +139,6 @@ public class UserService {
         }
     }
 
-    // ================= EXCEL =================
 
     public void importUsersFromExcel(MultipartFile file) throws Exception {
 

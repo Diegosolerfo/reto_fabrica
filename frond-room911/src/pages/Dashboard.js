@@ -10,6 +10,7 @@ function Dashboard() {
       <Sidebar />
 
       <div style={{ flex: 1, padding: "20px" }}>
+        <h2 className="mb-4">Dashboard</h2>
         <Routes>
           <Route path="access" element={<AccessPage />} />
           <Route path="users" element={<UsersPage />} />

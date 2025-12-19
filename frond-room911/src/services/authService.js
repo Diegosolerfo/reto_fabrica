@@ -1,16 +1,11 @@
 import api from "../api/axiosConfig";
 
 export const login = async (identificationNumber, password) => {
-  const response = await api.post("/auth/login", {
-    identificationNumber,
-    password
-  });
-
-  if (response.data.success) {
-    localStorage.setItem("user", JSON.stringify(response.data));
-  }
-
-  return response.data;
+    const response = await api.post("/auth/login", {
+        identificationNumber: parseInt(identificationNumber),
+        password: password
+    });
+    return response.data; 
 };
 
 export const logout = () => {

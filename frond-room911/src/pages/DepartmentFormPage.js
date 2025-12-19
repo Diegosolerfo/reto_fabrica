@@ -6,6 +6,7 @@ import {
   getDepartmentById,
   updateDepartment
 } from "../api/departmentsApi";
+import Swal from "sweetalert2";
 
 function DepartmentFormPage() {
   const { id } = useParams();
@@ -24,6 +25,9 @@ function DepartmentFormPage() {
           name: data.name,
           description: data.description
         });
+      }).catch(err => {
+        console.error("Error al cargar departamento", err);
+        Swal.fire("Error", "No se pudo cargar la información del departamento", "error");
       });
     }
   }, [id, isEdit]);
@@ -34,27 +38,33 @@ function DepartmentFormPage() {
     try {
       if (isEdit) {
         await updateDepartment(id, form);
+        Swal.fire("Actualizado", "Departamento actualizado con éxito", "success");
       } else {
         await createDepartment(form);
+        Swal.fire("Creado", "Departamento registrado con éxito", "success");
       }
-
       navigate("/dashboard/departments");
     } catch (err) {
-      alert("Error al guardar el departamento");
+      console.error(err);
+      Swal.fire("Error", "Hubo un problema al procesar la solicitud", "error");
     }
   };
 
   return (
-    <>
-      <h2>{isEdit ? "Editar departamento" : "Registrar departamento"}</h2>
+    <div className="container mt-4">
+      <div className="card p-4 shadow">
+        <h2 className="text-center">{isEdit ? "Editar departamento" : "Registrar departamento"}</h2>
+        <hr />
 
-      <DepartmentForm
-        form={form}
-        setForm={setForm}
-        onSubmit={handleSubmit}
-        isEdit={isEdit}
-      />
-    </>
+        <DepartmentForm
+          form={form}
+          setForm={setForm}
+          onSubmit={handleSubmit}
+          isEdit={isEdit}
+          navigate={navigate} // Pasamos navigate para el botón cancelar
+        />
+      </div>
+    </div>
   );
 }
 

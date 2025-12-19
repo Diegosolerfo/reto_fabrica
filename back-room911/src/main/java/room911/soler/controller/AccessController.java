@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/access")
-@CrossOrigin(origins = "http://localhost:3000")
 public class AccessController {
 
     private final AccessService accessService;

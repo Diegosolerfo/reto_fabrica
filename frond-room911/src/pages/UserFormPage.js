@@ -2,22 +2,21 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createUser, getUserById, updateUser } from "../api/userApi";
 import { getDepartments } from "../api/departmentsApi";
+import Swal from "sweetalert2";
 
 function UserFormPage() {
   const navigate = useNavigate();
-  const { id } = useParams(); // 👈 si existe → editar
+  const { id } = useParams(); 
   const isEdit = Boolean(id);
 
+  const adminData = JSON.parse(localStorage.getItem("admin"));
+  const isEditingSelf = isEdit && adminData && String(adminData.identificationNumber) === String(id);
+
   const [departments, setDepartments] = useState([]);
-
-  useEffect(() => {
-    getDepartments().then(data => setDepartments(data));
-  }, []);
   const [error, setError] = useState("");
-
   const [form, setForm] = useState({
     identificationNumber: "",
-    usertype: "",
+    usertype: "empleado",
     firstName: "",
     lastName: "",
     password: "",
@@ -25,49 +24,47 @@ function UserFormPage() {
     allow: false,
   });
 
-  // 🔹 Cargar usuario si es edición
+  useEffect(() => {
+    getDepartments()
+      .then(data => setDepartments(data))
+      .catch(err => console.error("Error cargando departamentos", err));
+  }, []);
+
   useEffect(() => {
     if (isEdit) {
-      getUserById(id).then(user => {
-        setForm({
-          identificationNumber: user.identificationNumber,
-          usertype: user.usertype,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          password: user.password,
-          idDepartment: user.idDepartment,
-          allow: user.allow,
+      getUserById(id)
+        .then(user => {
+          setForm({
+            identificationNumber: user.identificationNumber || "",
+            usertype: user.usertype || "empleado",
+            firstName: user.firstName || "",
+            lastName: user.lastName || "",
+            password: user.password || "", 
+            idDepartment: user.idDepartment || "",
+            allow: user.allow || false,
+          });
+        })
+        .catch(err => {
+          console.error("Error cargando usuario", err);
+          Swal.fire("Error", "No se pudo cargar la información del usuario", "error");
         });
-      });
     }
   }, [id, isEdit]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       [name]: type === "checkbox" ? checked : value,
-    });
+    }));
   };
 
-  // 🔹 Validaciones
   const validate = () => {
-    if (!/^\d+$/.test(form.identificationNumber)) {
-      return "El documento debe ser numérico";
-    }
-
-    if (form.firstName.length < 2 || form.firstName.length > 30) {
-      return "Nombre inválido (2–30 caracteres)";
-    }
-
-    if (form.lastName.length < 2 || form.lastName.length > 30) {
-      return "Apellido inválido (2–30 caracteres)";
-    }
-
-    if (!isEdit && (form.password.length < 6 || form.password.length > 15)) {
-      return "Contraseña inválida (6–15 caracteres)";
-    }
-
+    if (!/^\d+$/.test(form.identificationNumber)) return "El documento debe ser numérico";
+    if (form.firstName.trim().length < 2) return "El nombre es demasiado corto";
+    if (form.lastName.trim().length < 2) return "El apellido es demasiado corto";
+    if (!isEdit && (form.password.length < 6)) return "La contraseña debe tener al menos 6 caracteres";
+    if (!form.idDepartment) return "Debe seleccionar un departamento";
     return null;
   };
 
@@ -82,111 +79,92 @@ function UserFormPage() {
     }
 
     try {
-      console.log(form);
-      const payload = {
-        identificationNumber: Number(form.identificationNumber),
-        usertype: form.usertype === "admin_room_911" ? "admin_room_911" : "empleado",
-        firstName: form.firstName,
-        lastName: form.lastName,
-        idDepartment: Number(form.idDepartment),
-        password: form.password,
-        allow: form.allow,
-        };
-
-        if (isEdit) {
-        await updateUser(id, payload);
-        } else {
-        await createUser(payload);
-        }
-        navigate("/dashboard/users");
+      if (isEdit) {
+        await updateUser(id, form);
+        Swal.fire("Actualizado", "Usuario actualizado correctamente", "success");
+      } else {
+        await createUser(form);
+        Swal.fire("Creado", "Usuario registrado correctamente", "success");
+      }
+      navigate("/dashboard/users");
     } catch (err) {
-        setError("Ocurrio un error al intentar hacer la acción");
+      const msg = err.response?.data?.message || "Error al procesar la solicitud";
+      Swal.fire("Error", msg, "error");
     }
   };
 
   return (
-    <div className="container">
-      <h2>{isEdit ? "Editar usuario" : "Registrar usuario"}</h2>
+    <div className="container mt-4">
+      <div className="card p-4 shadow">
+        <h2>{isEdit ? "Editar usuario" : "Registrar usuario"}</h2>
+        <hr />
 
-      {error && <div className="alert alert-danger">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          name="identificationNumber"
-          className="form-control mb-2"
-          placeholder="Documento"
-          disabled={isEdit}
-          value={form.identificationNumber}
-          onChange={handleChange}
-        />
+        <form onSubmit={handleSubmit}>
+          
+          <div className="mb-2">
+            <label className="form-label">Documento</label>
+            <input name="identificationNumber" className="form-control" disabled={isEdit} value={form.identificationNumber} onChange={handleChange} />
+          </div>
 
-        <input
-          name="firstName"
-          className="form-control mb-2"
-          placeholder="Nombre"
-          value={form.firstName}
-          onChange={handleChange}
-        />
+          <div className="mb-2">
+            <label className="form-label">Nombre</label>
+            <input name="firstName" className="form-control" value={form.firstName} onChange={handleChange} />
+          </div>
 
-        <input
-          name="lastName"
-          className="form-control mb-2"
-          placeholder="Apellido"
-          value={form.lastName}
-          onChange={handleChange}
-        />
-        <input
-          name="usertype" type="hidden"
-          value={form.usertype}
-          onChange={handleChange}
-        />
+          <div className="mb-2">
+            <label className="form-label">Apellido</label>
+            <input name="lastName" className="form-control" value={form.lastName} onChange={handleChange} />
+          </div>
 
-        <select
-        name="idDepartment"
-        className="form-control mb-2"
-        value={form.idDepartment}
-        onChange={handleChange}
-        required
-      >
-        <option value="">Seleccione departamento</option>
-        {departments.map(d => (
-          <option key={d.idDepartment} value={d.idDepartment}>
-            {d.name}
-          </option>
-        ))}
-      </select>
+          <div className="mb-2">
+            <label className="form-label">Departamento</label>
+            <select name="idDepartment" className="form-control" value={form.idDepartment} onChange={handleChange} required>
+              <option value="">Seleccione departamento</option>
+              {departments.map((d) => (
+                <option key={d.idDepartment} value={d.idDepartment}>{d.name}</option>
+              ))}
+            </select>
+          </div>
 
-        <input
-          type="password"
-          name="password"
-          className="form-control mb-2"
-          placeholder={isEdit ? "Contraseña actual" : "Contraseña"}
-          value={form.password}
-          onChange={handleChange}
-        />
+          <div className="mb-2">
+            <label className="form-label">
+              {isEdit ? "Nueva Contraseña (dejar igual para no cambiar)" : "Contraseña"}
+            </label>
+            <input type="text" name="password" className="form-control" value={form.password} onChange={handleChange} />
+          </div>
 
-        <label className="form-check mb-3">
-          <input
-            type="checkbox"
-            name="allow"
-            checked={form.allow}
-            onChange={handleChange}
-          />
-          Permitir acceso
-        </label>
+          {!isEditingSelf ? (
+            <div className="form-check mb-3 mt-3">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="allowCheck"
+                name="allow"
+                checked={form.allow}
+                onChange={handleChange}
+              />
+              <label className="form-check-label" htmlFor="allowCheck">
+                Permitir acceso al sistema
+              </label>
+            </div>
+          ) : (
+            <div className="alert alert-info mt-3 py-2" style={{ fontSize: '0.9rem' }}>
+              Estás editando tu propio perfil. El permiso de acceso no puede ser modificado.
+            </div>
+          )}
 
-        <button className="btn btn-primary">
-          {isEdit ? "Actualizar" : "Registrar"}
-        </button>
-
-        <button
-          type="button"
-          className="btn btn-secondary ms-2"
-          onClick={() => navigate("/dashboard/users")}
-        >
-          Cancelar
-        </button>
-      </form>
+          <div className="d-flex gap-2">
+            <button type="submit" className="btn btn-primary">
+              {isEdit ? "Actualizar" : "Registrar"}
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={() => navigate("/dashboard/users")}>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

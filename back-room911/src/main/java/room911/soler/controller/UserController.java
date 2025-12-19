@@ -12,7 +12,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class UserController {
 

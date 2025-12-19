@@ -2,6 +2,8 @@ package room911.soler.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import room911.soler.config.JwtUtil;
 import room911.soler.dto.LoginResponse;
 import room911.soler.entity.Access;
 import room911.soler.entity.User;
@@ -17,9 +19,9 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final AccessRepository accessRepository;
+    private final JwtUtil jwtUtil;
 
     public LoginResponse login(Long identificationNumber, String password) {
-
         User user = userRepository.findByIdentificationNumber(identificationNumber)
                 .orElseThrow(() -> new RuntimeException("Usuario no existe"));
 
@@ -37,19 +39,23 @@ public class AuthService {
         access.setHour(LocalTime.now());
         accessRepository.save(access);
 
+        String token = jwtUtil.generateToken(user.getIdentificationNumber(), user.getUsertype());
+
         if ("admin_room_911".equalsIgnoreCase(user.getUsertype())) {
             return new LoginResponse(
                     true,
                     "Ingreso correcto - Administrador",
                     "ADMIN",
-                    user.getIdentificationNumber()
+                    user.getIdentificationNumber(),
+                    token
             );
         } else {
             return new LoginResponse(
                     true,
                     "Ingreso correcto",
                     "EMPLEADO",
-                    user.getIdentificationNumber()
+                    user.getIdentificationNumber(),
+                    token
             );
         }
     }
