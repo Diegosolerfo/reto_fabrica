@@ -11,7 +11,7 @@ import java.util.Date;
 public class JwtUtil {
 
     private final String SECRET_STRING = "room911_secret_key_super_segura_2025";
-    private final long EXPIRATION_TIME = 5 * 60 * 1000;
+    private final long EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 horas
     private final java.security.Key SECRET_KEY = Keys.hmacShaKeyFor(
             SECRET_STRING.getBytes(java.nio.charset.StandardCharsets.UTF_8)
     );

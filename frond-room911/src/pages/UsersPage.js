@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getUsers } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
 import { getDepartments } from "../api/departmentsApi";
@@ -75,7 +75,7 @@ function UsersPage() {
     alert("CSV subido correctamente");
     loadUsers();
   } catch (error) {
-    const message = error.response?.data || "Error al subir el CSV";
+    const message = error.response?.data?.message || (typeof error.response?.data === "string" ? error.response?.data : "Error al subir el CSV");
     Swal.fire("Error", message, "error");
     console.error("Error al subir el CSV:", error);
   }

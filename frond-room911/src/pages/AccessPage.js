@@ -41,8 +41,10 @@ function AccessPage() {
   }, [users]);
 
   const filteredAccesses = accesses.filter(a => {
-    const matchId = a.identification.toString().includes(filterId);
-    const matchDate = a.date.includes(filterDate); 
+    const idStr = a.identification != null ? a.identification.toString() : "";
+    const dateStr = a.date != null ? a.date.toString() : "";
+    const matchId = idStr.includes(filterId);
+    const matchDate = filterDate ? dateStr.includes(filterDate) : true;
     return matchId && matchDate;
   });
 
@@ -109,8 +111,8 @@ function AccessPage() {
                 <strong>{userMap[a.identification] || "Desconocido"}</strong>
               </td>
               <td>{a.identification}</td>
-              <td>{a.date}</td>
-              <td>{a.hour}</td>
+              <td>{a.date || "Sin fecha"}</td>
+              <td>{a.hour || "Sin hora"}</td>
               <td>
                 <button
                   className="btn btn-sm btn-danger shadow-sm"

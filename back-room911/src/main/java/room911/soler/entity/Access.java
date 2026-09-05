@@ -19,12 +19,22 @@ public class Access {
     @Column(name = "idaccess")
     private Integer idAccess;
 
-    @Column(name = "date_",insertable = false, updatable = false)
+    @Column(name = "date_")
     private LocalDate date;
 
-    @Column(name = "hour_",insertable = false, updatable = false)
+    @Column(name = "hour_")
     private LocalTime hour;
 
     @Column(name = "identification")
     private Long identification;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.date == null) {
+            this.date = LocalDate.now();
+        }
+        if (this.hour == null) {
+            this.hour = LocalTime.now();
+        }
+    }
 }

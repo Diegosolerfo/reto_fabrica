@@ -46,6 +46,7 @@ public class UserService {
     public User createUser(UserRequest request) {
 
         if (userRepository.existsById(request.getIdentificationNumber())) {
+            System.out.println("hola mk eso ya existe");
             throw new RuntimeException("El usuario ya existe");
         }
 

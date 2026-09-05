@@ -53,8 +53,8 @@ public class AccessService {
 
         for (Access a : accesses) {
             table.addCell(String.valueOf(a.getIdAccess()));
-            table.addCell(a.getDate().toString());
-            table.addCell(a.getHour().toString());
+            table.addCell(a.getDate() != null ? a.getDate().toString() : "N/A");
+            table.addCell(a.getHour() != null ? a.getHour().toString() : "N/A");
         }
 
         document.add(table);
